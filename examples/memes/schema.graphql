@@ -1,0 +1,61 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Account {
+  _id: String
+  id: String
+  email: String
+  family_name: String
+  gender: String
+  given_name: String
+  pictureUrl: String
+}
+
+type Project {
+  _id: String
+  ownerId: String
+  createdAt: String
+  updatedAt: String
+  commits: [Commit]
+}
+
+type Commit {
+  _id: String
+  ownerId: String
+  projectId: String
+  createdAt: String
+  updatedAt: String
+  photoUrl: String
+  comments: [Comment]
+}
+
+type Comment {
+  _id: String
+  ownerId: String
+  commitId: String
+  createdAt: String
+  updatedAt: String
+  comment: String
+}
+
+type Query {
+  allProjects: [Project]
+}
+
+type Mutation {
+  createProject(
+    ownerId: String
+  ): Project
+  createCommit(
+    ownerId: String
+    projectId: String
+    photoUrl: String
+  ): Commit
+  createComment(
+    ownerId: String
+    commitId: String
+    comment: String
+  ): Comment
+}

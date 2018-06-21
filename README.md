@@ -10,7 +10,7 @@ GraphQL based data sync server for mobile, with backend integration capabilities
 
 ```
 docker run --rm --name=postgres -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -v `pwd`/examples:/tmp/examples -d postgres
-docker exec postgres psql -U postgres -f /tmp/examples/create_tables.example.sql
+docker exec postgres psql -U postgres -f /tmp/examples/notes/create_tables.sql
 ```
 
 *Start Server*
@@ -55,13 +55,13 @@ curl -X PUT http://admin:password@127.0.0.1:5984/notes
 
 ```
 kubectl create secret generic data-sync-config \
- --from-file=schema.graphql=./examples/schema.example.graphql \
+ --from-file=schema.graphql=./examples/notes/schema.graphql \
  --from-file=data-sources.json=./k8s_templates/data-sources.json \
- --from-file=query.graphql=./examples/query.example.graphql \
- --from-file=resolver-mappings.json=./examples/resolver-mappings-postgres.example.json
+ --from-file=query.graphql=./examples/notes/query.graphql \
+ --from-file=resolver-mappings.json=./examples/notes/resolver-mappings-postgres.json
 
 kubectl create configmap postgres-sql \
- --from-file=create_tables.sql=./examples/create_tables.example.sql
+ --from-file=create_tables.sql=./examples/notes/create_tables.sql
 
 kubectl create -f ./k8s_templates/postgres_claim.yml
 kubectl create -f ./k8s_templates/postgres_deployment.yml

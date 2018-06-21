@@ -1,0 +1,40 @@
+{
+  "Project": {
+    "commits": {
+      "dataSource": "nedb_commit",
+      "requestMapping": "{\"operation\": \"find\",\"query\": {\"projectId\":\"{{context.object._id}}\"}}",
+      "responseMapping": "{{toJSON context.result}}"
+    }
+  },
+  "Commit": {
+    "comments": {
+      "dataSource": "nedb_comment",
+      "requestMapping": "{\"operation\": \"find\",\"query\": {\"commitId\":\"{{context.object._id}}\"}}",
+      "responseMapping": "{{toJSON context.result}}"
+    }
+  },
+  "Query": {
+    "allProjects": {
+      "dataSource": "nedb_project",
+      "requestMapping": "{\"operation\": \"find\",\"query\": {}}",
+      "responseMapping": "{{toJSON context.result}}"
+    }
+  },
+  "Mutation": {
+    "createProject": {
+      "dataSource": "nedb_project",
+      "requestMapping": "{\"operation\": \"insert\",\"doc\": {\"ownerId\": \"{{context.arguments.ownerId}}\"}}",
+      "responseMapping": "{{toJSON context.result}}"
+    },
+    "createCommit": {
+      "dataSource": "nedb_commit",
+      "requestMapping": "{\"operation\": \"insert\",\"doc\": {\"ownerId\": \"{{context.arguments.ownerId}}\",\"projectId\": \"{{context.arguments.projectId}}\",\"photoUrl\": \"{{context.arguments.photoUrl}}\"}}",
+      "responseMapping": "{{toJSON context.result}}"
+    },
+    "createComment": {
+      "dataSource": "nedb_comment",
+      "requestMapping": "{\"operation\": \"insert\",\"doc\": {\"ownerId\": \"{{context.arguments.ownerId}}\",\"commitId\": \"{{context.arguments.commitId}}\",\"comment\": \"{{context.arguments.comment}}\"}}",
+      "responseMapping": "{{toJSON context.result}}"
+    }
+  }
+}

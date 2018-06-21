@@ -1,0 +1,23 @@
+{
+  "nedb_project": {
+    "type": "nedb",
+    "collection": "projects",
+    "options": {
+      "timestampData": true
+    }
+  },
+  "nedb_commit": {
+    "type": "nedb",
+    "collection": "commits",
+    "options": {
+      "timestampData": true
+    }
+  },
+  "nedb_comment": {
+    "type": "nedb",
+    "collection": "comments",
+    "options": {
+      "timestampData": true
+    }
+  }
+}

@@ -1,0 +1,69 @@
+query allProjects {
+  allProjects {
+    _id
+    ownerId
+    createdAt
+    updatedAt
+    commits {
+      _id
+      ownerId
+      createdAt
+      updatedAt
+      photoUrl
+      comments {
+        _id
+        ownerId
+        createdAt
+        updatedAt
+        comment
+      }
+    }
+  }
+}
+
+mutation createProject {
+  createProject(ownerId: "1") {
+    _id
+    ownerId
+    createdAt
+    updatedAt
+    commits {
+      _id
+      ownerId
+      projectId
+      createdAt
+      updatedAt
+      photoUrl
+    }
+  }
+}
+
+mutation createCommit{
+  createCommit(ownerId:"1" projectId:"UkdTtVljVek8c0bl", photoUrl:"http://test") {
+    _id
+    ownerId
+    projectId
+    createdAt
+    updatedAt
+    photoUrl
+    comments {
+      _id
+      ownerId
+      commitId
+      createdAt
+      updatedAt
+      comment
+    }
+  }
+}
+
+mutation createComment {
+  createComment(ownerId:"1" commitId:"iwlyXW2tVDVyOnaX" comment:"TEST"){
+    _id
+    ownerId
+    commitId
+    createdAt
+    updatedAt
+    comment
+  }
+}
