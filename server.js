@@ -1,12 +1,8 @@
 const express = require('express')
-const bodyParser = require('body-parser')
-const { graphqlExpress, graphiqlExpress } = require('apollo-server-express')
-const graphql = require('graphql')
+const {ApolloServer} = require('apollo-server-express')
 const http = require('http')
-const { SubscriptionServer } = require('subscriptions-transport-ws')
 const cors = require('cors')
 const app = express()
-const fs = require('fs')
 
 app.use('*', cors())
 
@@ -32,34 +28,22 @@ if (RESOLVER_MAPPINGS_FILE == null || RESOLVER_MAPPINGS_FILE.length === 0) {
 
 const schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
 
-const tracing = true
-app.use('/graphql', bodyParser.json(), graphqlExpress({ schema, tracing }))
+const server = new ApolloServer({schema})
 
-var graphiqlConfig = {
-  endpointURL: '/graphql', // if you want GraphiQL enabled
-  subscriptionsEndpoint: `ws://localhost:${HTTP_PORT}/subscriptions`
-}
-const QUERY_FILE = process.env.QUERY_FILE
-if (QUERY_FILE && QUERY_FILE.length > 0) {
-  graphiqlConfig.query = fs.readFileSync(QUERY_FILE).toString()
-}
+server.applyMiddleware({
+  app,
+  gui: {
+    endpoint: '/graphql',
+    subscriptionEndpoint: `ws://localhost:${HTTP_PORT}/subscriptions`
+  }
+})
 
 // TODO Move this to the Admin UI
-app.get('/graphiql', graphiqlExpress(graphiqlConfig))
+// app.get('/graphiql', graphiqlExpress(graphiqlConfig))
 
 // Wrap the Express server
 const ws = http.createServer(app)
 
 ws.listen(HTTP_PORT, () => {
   console.log(`Server is now running on http://localhost:${HTTP_PORT}`)
-  // Set up the WebSocket for handling GraphQL subscriptions
-  // eslint-disable-next-line
-  new SubscriptionServer({
-    execute: graphql.execute,
-    subscribe: graphql.subscribe,
-    schema
-  }, {
-    server: ws,
-    path: '/subscriptions'
-  })
 })
