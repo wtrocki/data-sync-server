@@ -1,14 +1,11 @@
 const express = require('express')
 const {ApolloServer} = require('apollo-server-express')
 const http = require('http')
-const cors = require('cors')
 const app = express()
-
-app.use('*', cors())
 
 const HTTP_PORT = process.env.HTTP_PORT || '8000'
 
-const SCHEMA_FILE = process.env.SCHEMA_FILE
+let SCHEMA_FILE = process.env.SCHEMA_FILE
 if (SCHEMA_FILE == null || SCHEMA_FILE.length === 0) {
   console.error('SCHEMA_FILE not defined')
   process.exit(1)
@@ -20,26 +17,34 @@ if (DATA_SOURCES_FILE == null || DATA_SOURCES_FILE.length === 0) {
   process.exit(1)
 }
 
-const RESOLVER_MAPPINGS_FILE = process.env.RESOLVER_MAPPINGS_FILE
+let RESOLVER_MAPPINGS_FILE = process.env.RESOLVER_MAPPINGS_FILE
 if (RESOLVER_MAPPINGS_FILE == null || RESOLVER_MAPPINGS_FILE.length === 0) {
   console.error('RESOLVER_MAPPINGS_FILE not defined')
   process.exit(1)
 }
 
-const schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
+let schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
 
 const server = new ApolloServer({schema})
+server.applyMiddleware({app})
 
-server.applyMiddleware({
-  app,
-  gui: {
-    endpoint: '/graphql',
-    subscriptionEndpoint: `ws://localhost:${HTTP_PORT}/subscriptions`
-  }
-})
+setTimeout(function () {
+  SCHEMA_FILE = './examples/schema.example2.graphql'
+  RESOLVER_MAPPINGS_FILE = './examples/resolver-mappings.example2.json'
+  console.log('Reloading schema, restarting shit')
+  console.log('Reloading schema, restarting shit')
+  console.log('Reloading schema, restarting shit')
+  console.log('Reloading schema, restarting shit')
+  console.log('Reloading schema, restarting shit')
+  console.log('Reloading schema, restarting shit')
+  console.log('Reloading schema, restarting shit')
+  console.log('Reloading schema, restarting shit')
+  console.log('Reloading schema, restarting shit')
 
-// TODO Move this to the Admin UI
-// app.get('/graphiql', graphiqlExpress(graphiqlConfig))
+  schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
+
+  server.schema = schema
+}, 10000)
 
 // Wrap the Express server
 const ws = http.createServer(app)
