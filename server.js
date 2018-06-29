@@ -8,6 +8,9 @@ const cors = require('cors')
 const app = express()
 const fs = require('fs')
 
+setInterval(function () {
+  console.log('process.memoryUsage', JSON.stringify(process.memoryUsage()))
+}, 1000)
 app.use('*', cors())
 
 const HTTP_PORT = process.env.HTTP_PORT || '8000'
@@ -30,10 +33,35 @@ if (RESOLVER_MAPPINGS_FILE == null || RESOLVER_MAPPINGS_FILE.length === 0) {
   process.exit(1)
 }
 
-const schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
+// const schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
 
+var schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
 const tracing = true
-app.use('/graphql', bodyParser.json(), graphqlExpress({ schema, tracing }))
+app.use('/graphql', bodyParser.json(), function (req, res, next) {
+  const graphql = graphqlExpress({ schema, tracing })
+  graphql(req, res, next)
+})
+
+setInterval(() => {
+  schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE + '.2', DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE + '.2')
+}, 1000)
+
+// setTimeout(function() {
+//   var routes = app._router.stack;
+//   routes.forEach(removeMiddlewares);
+//   function removeMiddlewares(route, i, routes) {
+//     if (route.handle.name === 'graphqlHandler') {
+//       // unmount
+//       routes.splice(i, 1);
+//       // remount
+//       const schema2 = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE + '.2', DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE + '.2')
+//       app.use('/graphql', graphqlExpress({ schema2, tracing }))
+//       console.log('REMOUNTED');
+//     }
+//     if (route.route)
+//         route.route.stack.forEach(removeMiddlewares);
+//   }
+// }, 10000);
 
 var graphiqlConfig = {
   endpointURL: '/graphql', // if you want GraphiQL enabled
