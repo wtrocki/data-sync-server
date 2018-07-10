@@ -4,7 +4,7 @@ const time = new Date()
 
 const datasources = [
   {
-    name: 'nedb_notes',
+    name: 'memeolist',
     type: 'InMemory',
     config: '{"options":{"timestampData":true}}',
     createdAt: time,
@@ -13,7 +13,9 @@ const datasources = [
 ]
 
 const notesSchema = {
-  schema: `schema {
+  schema: `
+  
+  schema {
     query: Query
     mutation: Mutation
     subscription: Subscription
@@ -21,35 +23,34 @@ const notesSchema = {
 
   # The query type, represents all of the entry points into our object graph
   type Query {
-    readNote(id: String): Note
-    listNotes: [Note]
+    allMemes(orderBy: MemeOrderBy): [Meme]
   }
 
   # The mutation type, represents all updates we can make to our data
   type Mutation {
-    createNote(
-      title: String,
-      content: String,
-    ): Note
-    updateNote(
-      id: String,
-      title: String,
-      content: String
-    ): Note
-    deleteNote(id: String): Note
+    createMeme(photoUrl: String!): Meme    
   }
-
-  type Note {
-    _id: String
-    title: String
-    content: String
-    createdAt: String
-    updatedAt: String
-  }
-
+  
   type Subscription {
-    noteCreated: Note
-  }`,
+    _:Boolean
+  }
+  
+  type Meme {
+    _id: ID! @isUnique
+    photoUrl: String!
+    votes: Int
+  }
+  
+  enum MemeOrderBy {
+    id_ASC
+    id_DESC
+    photoUrl_ASC
+    photoUrl_DESC
+    votes_ASC
+    votes_DESC
+  }
+  
+  `,
   createdAt: time,
   updatedAt: time
 }
@@ -57,16 +58,7 @@ const notesSchema = {
 const resolvers = [
   {
     type: 'Query',
-    field: 'readNote',
-    DataSourceId: 1,
-    requestMapping: '{"operation": "findOne","query": {"_id": "{{context.arguments.id}}"}}',
-    responseMapping: '{{toJSON context.result}}',
-    createdAt: time,
-    updatedAt: time
-  },
-  {
-    type: 'Query',
-    field: 'listNotes',
+    field: 'allMemes',
     DataSourceId: 1,
     requestMapping: '{"operation": "find","query": {}}',
     responseMapping: '{{toJSON context.result}}',
@@ -75,27 +67,9 @@ const resolvers = [
   },
   {
     type: 'Mutation',
-    field: 'createNote',
+    field: 'createMeme',
     DataSourceId: 1,
-    requestMapping: '{"operation": "insert","doc": {"title": "{{context.arguments.title}}","content": "{{context.arguments.content}}"}}',
-    responseMapping: '{{toJSON context.result}}',
-    createdAt: time,
-    updatedAt: time
-  },
-  {
-    type: 'Mutation',
-    field: 'updateNote',
-    DataSourceId: 1,
-    requestMapping: '{"operation": "update","query": {"_id": "{{context.arguments.id}}"}, "update":{"title": "{{context.arguments.title}}","content": "{{context.arguments.content}}"},"options":{}}',
-    responseMapping: '{{toJSON context.result}}',
-    createdAt: time,
-    updatedAt: time
-  },
-  {
-    DataSourceId: 1,
-    field: 'deleteNote',
-    type: 'Mutation',
-    requestMapping: '{"operation": "remove","query": {"_id": "{{context.arguments.id}}"},"options":{}}',
+    requestMapping: '{"operation": "insert","doc": {"photoUrl": "{{context.arguments.photoUrl}}","votes": "{{context.arguments.votes}}"}}',
     responseMapping: '{{toJSON context.result}}',
     createdAt: time,
     updatedAt: time

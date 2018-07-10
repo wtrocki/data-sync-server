@@ -4,7 +4,10 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const {graphqlExpress, graphiqlExpress} = require('apollo-server-express')
 const cors = require('cors')
-const { runHealthChecks } = require('./health')
+const {runHealthChecks} = require('./health')
+const compileSchema = require('graphql').buildSchema
+const {graphql} = require('graphql')
+const {introspectionQuery} = require('graphql/utilities')
 
 const schemaParser = require('./lib/schemaParser')
 const schemaListenerCreator = require('./lib/schemaListeners/schemaListenerCreator')
@@ -30,6 +33,18 @@ module.exports = async ({graphQLConfig, graphiqlConfig, postgresConfig, schemaLi
       res.status(503)
     }
     res.json(result)
+  })
+  app.get('/schema', async (req, res) => {
+    res.set('Content-Type', 'text/plain')
+    const graphQLSchema = await models.GraphQLSchema.findOne()
+    let graphQLSchemaString = null
+    if (graphQLSchema != null) {
+      graphQLSchemaString = graphQLSchema.schema
+    }
+    console.log(introspectionQuery)
+    let a = compileSchema(graphQLSchemaString)
+    let b = await graphql(a, introspectionQuery)
+    res.json(b)
   })
 
   const schemaListener = schemaListenerCreator(schemaListenerConfig)
