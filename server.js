@@ -1,7 +1,6 @@
 const express = require('express')
 const {ApolloServer} = require('apollo-server-express')
 const http = require('http')
-const app = express()
 
 const HTTP_PORT = process.env.HTTP_PORT || '8000'
 
@@ -25,7 +24,11 @@ if (RESOLVER_MAPPINGS_FILE == null || RESOLVER_MAPPINGS_FILE.length === 0) {
 
 let schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
 
-const server = new ApolloServer({schema})
+// Wrap the Express server
+
+let app = express()
+const ws = http.createServer(app)
+let server = new ApolloServer({schema})
 server.applyMiddleware({app})
 
 setTimeout(function () {
@@ -43,12 +46,17 @@ setTimeout(function () {
 
   schema = require('./lib/schemaParser').parseFromFile(SCHEMA_FILE, DATA_SOURCES_FILE, RESOLVER_MAPPINGS_FILE)
 
-  server.schema = schema
-}, 10000)
+  const newApp = express()
+  server = new ApolloServer({schema})
+  server.applyMiddleware({app: newApp})
 
-// Wrap the Express server
-const ws = http.createServer(app)
+  ws.removeListener('request', app)
+  ws.on('request', newApp)
+  app = newApp
+}, 10000)
 
 ws.listen(HTTP_PORT, () => {
   console.log(`Server is now running on http://localhost:${HTTP_PORT}`)
 })
+
+// NOTE: goto localhost:8080/graphql for the playground not, /graphiql
