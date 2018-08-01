@@ -20,55 +20,115 @@ GraphQL based data sync server for mobile, with backend integration capabilities
 
 ## Getting Started
 
-### Install Dependencies
+1. Install Dependencies
 
+   ```shell
+   npm install
+   ```
+
+1. Start and initialize the database using docker compose
+
+   ```shell
+   docker-compose -p aerogeardatasyncserver up
+   ```
+
+   > There are 2 Postgres instances defined in docker-compose configuration:
+   > 1. For storing the configuration of the sync server itself
+   > 1. For storing the [Memeolist](#whats-memeolist) data.
+   > docker-compose is only used with development, starting up the Postgres instance for [Memeolist](#whats-memeolist) will not cause any harm. 
+
+1. Initialize the database (in another terminal).
+
+   ```shell
+   # no sample schema/resolvers
+   npm run db:init
+
+   # sample schema/resolvers for memeolist - in-memory data source
+   npm run db:init:memeo:inmem
+
+   # sample schema/resolvers for memeolist - Postgres data source
+   npm run db:init:memeo:postgres
+   
+   # set up the necessary tables. **Those are destructive actions.** They drop and recreate the tables every time.
+   npm run db:init*
+
+   # For local development which and seed the database with config and tables for [Memeolist](#whats-memeolist) sample application. 
+   npm run db:init:memeo:*
+   ```
+
+1. Start the Server
+
+   ```shell
+   npm run dev
+   ```
+
+1. Go to `http://localhost:8000/graphiql` for an interactive query brower.
+
+> The graphql endpoint is at `/graphql`.    
+> The subscriptions websocket is at `/subscriptions`.
+
+## Test
+
+### Unit Tests
+
+```shell
+npm run test:unit
 ```
-npm install
+
+### Integration tests:
+
+1. Start the database first:
+
+   ```shell
+   docker-compose -p aerogeardatasyncserver up
+   ```
+
+1. In another session, run the tests:
+
+   ```
+   npm run test:integration
+   ```
+
+### All tests with CircleCi CLI
+
+1. Install [CircleCi CLI](https://circleci.com/docs/2.0/local-cli/)
+1. Execute these command locally:
+
+   ```shell
+   # CircleCi CLI doesn't support workflows yet
+   circleci build --job unit_test
+   circleci build --job integration_test
+   ```
+
+### Individual tests
+
+Assuming you have `npm@5.2.0` or greater you can do the following:
+
+```shell
+npx ava /path/to/test.js
 ```
 
-### Start and Initialize the Database
+`npx` will ensure the correct version of ava (specified in package.json) is used.
 
-Use docker compose to start the database(s).
+### Debugging individual tests
 
-```
-docker-compose -p aerogeardatasyncserver up
-```
+The easiest way to debug tests is using Chrome DevTools. Use [inspect-process](https://npm.im/inspect-process) to easily launch a debugging session with Chrome DevTools.
 
-There are 2 Postgres instances defined in docker-compose configuration:
-1. For storing the configuration of the sync server itself
-2. For storing the [Memeolist](#whats-memeolist) data.
-
-Since docker-compose is only used with development, starting up the Postgres instance for [Memeolist](#whats-memeolist)
-will not cause any harm. 
-
-Initialize the database in another terminal.
-
-```
-# no sample schema/resolvers
-npm run db:init
-
-# sample schema/resolvers for memeolist - in-memory data source
-npm run db:init:memeo:inmem
-
-# sample schema/resolvers for memeolist - Postgres data source
-npm run db:init:memeo:postgres
+```shell
+npm install -g inspect-process
 ```
 
-`npm run db:init*` commands set up the necessary tables.  **Those are destructive actions.** 
-They drop and recreate the tables every time.
+* In chrome go to [`chrome://inspect`](chrome://inspect/)
+* Click on 'Open dedicated DevTools for Node.' This will open a new DevTools window.
+* Click on 'add folder to workspace' and use the wizard to open this project.
+* Go to the appropriate test file (or code that's being tested) and set a breakpoint
+* Now run the individual test as follows:
 
-`npm run db:init:memeo:*` commands are useful for local development which and seed the database with config and tables
-for [Memeolist](#whats-memeolist) sample application. 
-
-### Start the Server
-
-```
-npm run dev
+```shell
+inspect node_modules/ava/profile.js some/test/file.js
 ```
 
-Go to http://localhost:8000/graphiql for an interactive query brower.
-The graphql endpoint is at `/graphql`.
-The subscriptions websocket is at `/subscriptions`.
+The DevTools window should automatically connect to the debugging session and execution should pause if some breakpoints are set.
 
 ### Inspecting Postgres
 
@@ -86,66 +146,6 @@ docker-compose -p aerogeardatasyncserver rm
 Going to remove aerogeardatasyncserver_postgres_1
 Are you sure? [yN] y
 ```
-
-### Running Unit Tests
-
-```
-npm run test:unit
-```
-
-### Running Integration tests:
-
-Start the database first:
-```
-docker-compose -p aerogeardatasyncserver up
-```
-
-In another session, run the tests:
-```
-npm run test:integration
-```
-
-### Running all tests with CircleCi CLI
-
-Install CircleCi CLI using this link: https://circleci.com/docs/2.0/local-cli/
-
-Then execute these command locally:
-
-```
-# CircleCi CLI doesn't support workflows yet
-circleci build --job unit_test
-circleci build --job integration_test
-```
-
-### Running Individual Tests
-
-Assuming you have `npm@5.2.0` or greater you can do the following:
-
-```
-npx ava /path/to/test.js
-```
-
-`npx` will ensure the correct version of ava (specified in package.json) is used.
-
-### Debugging Individual Tests
-
-The easiest way to debug tests is using Chrome DevTools. Use [inspect-process](https://npm.im/inspect-process) to easily launch a debugging session with Chrome DevTools.
-
-```
-npm install -g inspect-process
-```
-
-* In chrome go to [`chrome://inspect`](chrome://inspect/)
-* Click on 'Open dedicated DevTools for Node.' This will open a new DevTools window.
-* Click on 'add folder to workspace' and use the wizard to open this project.
-* Go to the appropriate test file (or code that's being tested) and set a breakpoint
-* Now run the individual test as follows:
-
-```
-inspect node_modules/ava/profile.js some/test/file.js
-```
-
-The DevTools window should automatically connect to the debugging session and execution should pause if some breakpoints are set.
 
 # Configuration
 
