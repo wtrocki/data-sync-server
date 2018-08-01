@@ -1,4 +1,4 @@
-# aerogear-data-sync-server
+# AeroGear Sync Server
 
 GraphQL based data sync server for mobile, with backend integration capabilities
 
