@@ -1,8 +1,13 @@
 # AeroGear Sync Server
 
-GraphQL based data sync server for mobile, with backend integration capabilities
-
+[![circle-ci](https://img.shields.io/circleci/project/github/aerogear/data-sync-server/master.svg)](https://circleci.com/gh/aerogear/data-sync-server)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![Docker Hub](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/aerogearcatalog/data-sync-server/)
+[![Docker Stars](https://img.shields.io/docker/stars/aerogearcatalog/data-sync-server.svg)](https://registry.hub.docker.com/v2/repositories/aerogearcatalog/data-sync-server/stars/count/)
+[![Docker pulls](https://img.shields.io/docker/pulls/aerogearcatalog/data-sync-server.svg)](https://registry.hub.docker.com/v2/repositories/aerogearcatalog/data-sync-server/)
+[![License](https://img.shields.io/:license-Apache2-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+
+GraphQL based data sync server for mobile, with backend integration capabilities
 
 ## Getting Started
 
