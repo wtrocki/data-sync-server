@@ -9,6 +9,15 @@
 
 GraphQL based data sync server for mobile, with backend integration capabilities
 
+|                          | Project Info                                                     |
+| ------------------------ | ---------------------------------------------------------------- |
+| License:                 | Apache License, Version 2.0                                      |
+| Build:                   | Docker                                                           |
+| End User Documentation:  | https://docs.aerogear.org                                        |
+| Community Documentation: | https://aerogear.org                                             |
+| Issue tracker:           | https://issues.jboss.org/browse/AEROGEAR                         |
+| Mailing lists:           | [aerogear-dev](https://groups.google.com/forum/#!forum/aerogear) |
+
 ## Getting Started
 
 ### Install Dependencies
