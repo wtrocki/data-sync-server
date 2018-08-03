@@ -38,8 +38,16 @@ const resolvers = [
     field: 'allMemes',
     DataSourceId: 1,
     GraphQLSchemaId: 1,
+    preHook: 'http://www.google.com',
+    postHook: 'http://www.redhat.com',
     requestMapping: 'SELECT * FROM Meme',
     responseMapping: '{{ toJSON context.result }}',
+    publish: JSON.stringify({
+      topic: 'memeCreated',
+      payload: `{
+        "memeAdded": {{ toJSON context.result }}
+      }`
+    }),
     createdAt: time,
     updatedAt: time
   },
